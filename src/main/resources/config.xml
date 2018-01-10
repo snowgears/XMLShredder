@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <misc>
+    <upload>false</upload>
+    <printqueries>true</printqueries>
+  </misc>
+  <spreadsheet>
+    <create>false</create>
+    <file>/Users/tembry/Desktop/importer_files/output_values.xlsx</file>
+  </spreadsheet>
+  <connection>
+    <username>eeteap</username>
+    <password>odaddado</password>
+    <host>jdbc:postgresql://publius:5434/eeteapsitdb?useUnicode=true;characterEncoding=UTF-8;stringtype=unspecified</host>
+  </connection>
+  <mapping>
+    <xpath>OwnershipManagementInfos.OwnershipManagementInfo</xpath>
+    <xattribute>RelationshipTypeCode</xattribute>  <!-- This field may be blank -->
+    <dbtable>hotel</dbtable>
+    <dbfield>relationtypecode</dbfield>
+    <child_mapping>
+      <xpath>OwnershipManagementInfos.OwnershipManagementInfo.CompanyName</xpath>
+      <xattribute>Code</xattribute>
+      <dbtable>hotel</dbtable>
+      <dbfield>companycode</dbfield>
+    </child_mapping>
+    <child_mapping>
+      <xpath>OwnershipManagementInfos.OwnershipManagementInfo.CompanyName</xpath>
+      <xattribute></xattribute>
+      <dbtable>hotel</dbtable>
+      <dbfield>companyname</dbfield>
+    </child_mapping>
+  </mapping>
+  <mapping>
+    <xpath>TPA_Ext_PropertyAccountEPIC</xpath>
+    <xattribute>OwnerType</xattribute>  <!-- This field may be blank -->
+    <dbtable>hotel</dbtable>
+    <dbfield>ownertype</dbfield>
+  </mapping>
+</config>
