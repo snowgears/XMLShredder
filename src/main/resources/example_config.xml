@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <connection>
+    <username>username</username>
+    <password>password</password>
+    <host>jdbc:postgresql://example:1212/exampledb?useUnicode=true;characterEncoding=UTF-8;stringtype=unspecified</host>
+  </connection>
+  <mapping> <!-- Parent mappings should be unique fields of data that other mappings (that may not be unique) can attach to-->
+    <xpath>book</xpath> <!-- This can either be a full path or partial path. As long as there are unique entries -->
+    <xattribute>id</xattribute>  <!-- This field will be blank if reading directly out of xml tags -->
+    <dbtable>book</dbtable>
+    <dbfield>id</dbfield>
+    <child_mapping> <!-- Child mapping means that it is tied to the parent mapping when being inserted into database -->
+      <xpath>catalog.book.author</xpath> <!-- A more specific mapping path example -->
+      <xattribute></xattribute>
+      <dbtable>book</dbtable>
+      <dbfield>author</dbfield>
+    </child_mapping>
+    <child_mapping>
+      <xpath>catalog.book.title</xpath>
+      <xattribute></xattribute>
+      <dbtable>book</dbtable>
+      <dbfield>title</dbfield>
+    </child_mapping>
+    <child_mapping>
+      <xpath>catalog.book.genre</xpath>
+      <xattribute></xattribute>
+      <dbtable>book</dbtable>
+      <dbfield>genre</dbfield>
+    </child_mapping>
+  </mapping>
+</config>
