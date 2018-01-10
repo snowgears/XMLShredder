@@ -1,3 +1,5 @@
+package com.tannerembry.xmlshredder.importer;
+
 import java.sql.Connection;
 
 import java.util.ArrayList;
@@ -6,6 +8,8 @@ import java.util.HashMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.tannerembry.xmlshredder.exporter.SpreadsheetExporter;
 
 /**
  * This class handles the actual shredding of the data from the xml file
@@ -30,7 +34,8 @@ public class SAXImportHandler extends DefaultHandler {
 
 	private String fullPath = "";
 	private int depth = 0;
-	private boolean printQueries;
+	private ImporterSettings importerSettings;
+	private SpreadsheetExporter exportSheet;
 
 	/**
 	 * Constructor for the SAXImportHandler object
@@ -38,12 +43,15 @@ public class SAXImportHandler extends DefaultHandler {
 	 * @param connection The active connection to the database
 	 * @param printQueries Controls whether or not the executed queries are printed to the console
 	 */
-	public SAXImportHandler(ImportInstructionManager importInstructionManager, Connection connection, boolean printQueries){
+	public SAXImportHandler(ImportInstructionManager importInstructionManager, Connection connection, ImporterSettings importerSettings){
 		this.importInstructionManager = importInstructionManager;
 		this.connection = connection;
-		this.printQueries = printQueries;
+		this.importerSettings = importerSettings;
 
 		parentEntries = new HashMap<String, ImportEntry>();
+		
+		if(importerSettings.exportSpreadsheet())
+			exportSheet = new SpreadsheetExporter(importerSettings.getExportSpreadsheetPath());
 	}
 
 	/**
@@ -60,6 +68,10 @@ public class SAXImportHandler extends DefaultHandler {
 			fullPath = qName;
 		else
 			fullPath += "."+qName;
+		
+//		if(fullPath.contains("Address")){
+//			System.out.println(fullPath);
+//		}
 
 		importInstruction = null;
 
@@ -131,13 +143,20 @@ public class SAXImportHandler extends DefaultHandler {
 			//the entry is a parent and is different than the previous parent
 			if(importInstruction.getParent() == null && !parentEntry.equals(entry)){
 				//insert the entry and update the current parent
-				parentEntry.insertToDatabase(connection, printQueries);
+				parentEntry.export(connection, importInstruction, exportSheet, importerSettings);
 				parentEntry = entry;
 				parentEntries.put(hashKey, parentEntry);
 			}
 			//the entry is a child
 			else if(importInstruction.getParent() != null){
-				parentEntry.addChild(entry);
+				if(parentEntry.hasChild(entry)){
+					parentEntry.export(connection, importInstruction, exportSheet, importerSettings);
+					parentEntry.clearChildren();
+					handleValue(value);
+				}
+				else{
+					parentEntry.addChild(entry);
+				}
 			}
 		}
 	}
@@ -149,7 +168,9 @@ public class SAXImportHandler extends DefaultHandler {
 	 */
 	public void processFinalEntries(){
 		for(ImportEntry parent : parentEntries.values()){
-			parent.insertToDatabase(connection, printQueries);
+			parent.export(connection, importInstruction, exportSheet, importerSettings);
 		}
+		if(importerSettings.exportSpreadsheet())
+			exportSheet.export();
 	}
 }

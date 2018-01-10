@@ -1,4 +1,8 @@
+package com.tannerembry.xmlshredder;
+
 import java.io.File;
+
+import com.tannerembry.xmlshredder.importer.ImporterTask;
 
 /**
  * The XML Shredder program takes a data file with the extension .xml and pulls
@@ -14,8 +18,6 @@ public class Runner {
 
 	protected static String XML_FILE;
 	protected static String CONFIG_FILE;
-
-	protected static boolean printQueries = true;
 
 	/**
 	 * This method runs the main program.
@@ -44,6 +46,12 @@ public class Runner {
 			return;
 		}
 
-		ImporterTask task = new ImporterTask(XML_FILE, CONFIG_FILE, printQueries);
+		System.out.println("Starting importer task.");
+		System.out.println("Using config file from path: "+configFile.getAbsolutePath());
+		System.out.println("Reading data file from path: "+xmlFile.getAbsolutePath());
+		
+		ImporterTask task = new ImporterTask(XML_FILE, CONFIG_FILE);
+		
+		System.out.println("Finished importer task.");
 	}
 }

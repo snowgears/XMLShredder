@@ -1,3 +1,5 @@
+package com.tannerembry.xmlshredder.importer;
+
 /**
  * Represents an instruction for what information to shred from the
  * xml data file and where to import it into the relational database 
@@ -15,7 +17,7 @@ public class ImportInstruction implements Comparable<ImportInstruction> {
 	private String dbTable;
 	private String dbField;
 
-	private String parent; //this is the xPath of the parent (if it exists)
+	private ImportInstruction parent; //this is the xPath of the parent (if it exists)
 	private String hashKey;
 
 	/**
@@ -80,7 +82,7 @@ public class ImportInstruction implements Comparable<ImportInstruction> {
 	 * Returns the xPath of the parent ImportInstruction (if it exists)
 	 * @return parent
 	 */
-	public String getParent(){
+	public ImportInstruction getParent(){
 		return parent;
 	}
 
@@ -89,9 +91,9 @@ public class ImportInstruction implements Comparable<ImportInstruction> {
 	 * @param e The parent ImportInstruction
 	 */
 	public void setParent(ImportInstruction e){
-		parent = e.getXPath();
-		if(e.getXAttribute() != null && !e.getXAttribute().isEmpty())
-			parent+="+"+e.getXAttribute();
+		parent = e;
+//		if(e.getXAttribute() != null && !e.getXAttribute().isEmpty())
+//			parent+="+"+e.getXAttribute();
 
 		this.generateHashKey();
 	}
@@ -123,7 +125,7 @@ public class ImportInstruction implements Comparable<ImportInstruction> {
 				hashKey += "+"+this.getXAttribute();
 		}
 		else
-			hashKey = this.getParent();
+			hashKey = this.getParent().getHashKey();
 
 		this.hashKey = hashKey;
 	}

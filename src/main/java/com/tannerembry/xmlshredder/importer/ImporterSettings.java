@@ -1,3 +1,5 @@
+package com.tannerembry.xmlshredder.importer;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +25,12 @@ import org.xml.sax.SAXException;
 
 public class ImporterSettings {
 
+	private boolean printQueries;
+	private boolean upload;
+	
+	private boolean exportSpreadsheet;
+	private String exportSpreadsheetPath;
+	
 	private String dbUsername;
 	private String dbPassword;
 	private String dbHost;
@@ -64,6 +72,40 @@ public class ImporterSettings {
 	public String getDatabaseHost(){
 		return dbHost;
 	}
+	
+	/**
+	 * Returns whether or not to print queries to console
+	 * @return printQueries
+	 */
+	public boolean printQueries(){
+		return printQueries;
+	}
+	
+	/**
+	 * Returns the whether or not to actually try to upload to the database
+	 * @return upload
+	 */
+	public boolean upload(){
+		return upload;
+	}
+	
+	/**
+	 * Returns the whether or not to export shredded values into a spreadsheet
+	 * @return exportSpreadsheet
+	 */
+	public boolean exportSpreadsheet(){
+		return exportSpreadsheet;
+	}
+	
+	/**
+	 * Returns the file path to the exported spreadsheet (if applicable)
+	 * @return exportSpreadsheetPath
+	 */
+	public String getExportSpreadsheetPath(){
+		if(!exportSpreadsheet)
+			return null;
+		return exportSpreadsheetPath;
+	}
 
 	/**
 	 * Returns the map of import instructions
@@ -82,6 +124,32 @@ public class ImporterSettings {
 
 		// normalize text representation
 		document.getDocumentElement().normalize();
+		
+//		NodeList miscInfo = document.getElementsByTagName("misc");
+//		for (int d = 0; d < miscInfo.getLength(); d++) {
+//
+//			Node miscNode = miscInfo.item(d);
+//			if (miscNode.getNodeType() == Node.ELEMENT_NODE) {
+//
+//				Element miscElement = (Element) miscNode;
+//
+//				this.upload = Boolean.parseBoolean(miscElement.getElementsByTagName("upload").item(0).getTextContent());
+//				this.printQueries = Boolean.parseBoolean(miscElement.getElementsByTagName("printqueries").item(0).getTextContent());
+//			}
+//		}
+		
+		NodeList ssInfo = document.getElementsByTagName("spreadsheet");
+		for (int d = 0; d < ssInfo.getLength(); d++) {
+
+			Node ssNode = ssInfo.item(d);
+			if (ssNode.getNodeType() == Node.ELEMENT_NODE) {
+
+				Element ssElement = (Element) ssNode;
+
+				this.exportSpreadsheet = Boolean.parseBoolean(ssElement.getElementsByTagName("create").item(0).getTextContent());
+				this.exportSpreadsheetPath = ssElement.getElementsByTagName("file").item(0).getTextContent();
+			}
+		}
 
 		NodeList databaseInfo = document.getElementsByTagName("connection");
 		for (int d = 0; d < databaseInfo.getLength(); d++) {

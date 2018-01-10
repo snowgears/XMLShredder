@@ -1,9 +1,13 @@
+package com.tannerembry.xmlshredder.importer;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.tannerembry.xmlshredder.exporter.SpreadsheetExporter;
 
 /**
  * @author      Tanner Embry, Claresco Corp <tembry@claresco.com>
@@ -63,7 +67,7 @@ public class ImportEntry {
 		if(children == null){
 			children = new ArrayList<ImportEntry>();
 		}
-		if(!hasChild(entry))
+		//if(!hasChild(entry))
 			children.add(entry);
 	}
 
@@ -73,8 +77,8 @@ public class ImportEntry {
 	 * @return true - this has a child that matches the provided ImportEntry
 	 * 		 false - this does not have a child that matches the provided ImportEntry
 	 */
-	private boolean hasChild(ImportEntry entry){
-		if(children == null)
+	public boolean hasChild(ImportEntry entry){
+		if(children == null || children.isEmpty())
 			return false;
 
 		for(ImportEntry e : children){
@@ -82,6 +86,10 @@ public class ImportEntry {
 				return true;
 		}
 		return false;
+	}
+	
+	public void clearChildren(){
+		this.children.clear();
 	}
 
 	/**
@@ -95,47 +103,58 @@ public class ImportEntry {
 	}
 
 	/**
-	 * Inserts this ImportEntry into the database
+	 * Inserts this ImportEntry into the database (if upload=true in settings)
+	 * Inserts this ImportEntry into a spreadsheet (if exportSheet=true in settings)
 	 * @param con The connection to the database
 	 * @param printQueries Controls whether or not the executed queries are printed to the console
 	 * @return true - the database insertion was successful
 	 * 		 false - the database insertion failed
 	 */
-	public boolean insertToDatabase(Connection con, boolean printQueries){
+	public boolean export(Connection con, ImportInstruction instruction, SpreadsheetExporter exportSheet, ImporterSettings importerSettings){
 
-		if(this.children == null)
+		if(this.children == null || this.children.isEmpty())
 			return false;
 
 		//first need to check if you are doing an insert or an update in the database
 		boolean doInsert = true;
 
-		try {
-			String checkQuery = "select "+dbFieldKey+" from "+dbTable+" where "+dbFieldKey+"='"+dbFieldValue+"'";
-			PreparedStatement stat = con.prepareStatement(checkQuery);
+		if(importerSettings.upload()){
+			try {
+				String checkQuery = "select "+dbFieldKey+" from "+dbTable+" where "+dbFieldKey+"='"+dbFieldValue+"'";
+				PreparedStatement stat = con.prepareStatement(checkQuery);
 
-			ResultSet rs = stat.executeQuery();
+				ResultSet rs = stat.executeQuery();
 
-			//if there already exists an entry with this value, do an update instead of an insert
-			if(rs.next()){
-				doInsert = false;
+				//if there already exists an entry with this value, do an update instead of an insert
+				if(rs.next()){
+					doInsert = false;
+				}
+
+				rs.close();
+				stat.close();
+
+			} catch (SQLException e){
+				e.printStackTrace();
+				return false;
 			}
-
-			rs.close();
-			stat.close();
-
-		} catch (SQLException e){
-			e.printStackTrace();
-			return false;
 		}
 
 		String insertColumnNames = "("+dbFieldKey+", ";
 		String insertColumnValues = "('"+dbFieldValue+"', ";
 		String updateColumns = "";
+		
+		List<String> columnNames = new ArrayList<>();
+		List<String> columnValues = new ArrayList<>();
+		columnNames.add(dbFieldKey);
+		columnValues.add(dbFieldValue);
 
 		int i=0;
 		for(ImportEntry child : this.children){
 			String value = child.getValue();
 			String key = child.getKey();
+			
+			columnNames.add(key);
+			columnValues.add(value);
 
 			insertColumnNames += key;
 
@@ -169,13 +188,22 @@ public class ImportEntry {
 				insertFilterQuery = "update "+dbTable+" set "+updateColumns+" where "+dbFieldKey+"='"+dbFieldValue+"'";
 			}
 
-			if(printQueries)
-				System.out.println(insertFilterQuery);
-			PreparedStatement psInsertLog = con.prepareStatement(insertFilterQuery);
+			if(importerSettings.printQueries()){
+				System.out.println(insertColumnNames+" - "+insertColumnValues);
+			}
 
-			psInsertLog.executeUpdate();
-			if (psInsertLog != null)
-				psInsertLog.close();
+			if(importerSettings.upload()){
+				PreparedStatement psInsertLog = con.prepareStatement(insertFilterQuery);
+
+				psInsertLog.executeUpdate();
+				if (psInsertLog != null)
+					psInsertLog.close();
+			}
+			
+			if(importerSettings.exportSpreadsheet() && exportSheet != null){
+				exportSheet.insertValues(instruction, columnNames, columnValues);
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;

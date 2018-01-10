@@ -1,3 +1,5 @@
+package com.tannerembry.xmlshredder.importer;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,35 +35,32 @@ public class ImporterTask {
 	 * @param configFile The path to the configuration file needed to run the program
 	 * @param printQueries Controls whether or not the executed queries are printed to the console
 	 */
-	public ImporterTask(String xmlFile, String configFile, boolean printQueries){
+	public ImporterTask(String xmlFile, String configFile){
 		XML_FILE = xmlFile;
 		CONFIG_FILE = configFile;
 
 		initFromConfig();
 
-		try {
-			importInstructionManager.verifyInstructions(connection);
-			run(printQueries);
-		} catch(SQLException e){
-			System.out.println("The configuration file provided is not mapped correctly to the fields in the database.");
-			e.printStackTrace();
+		run();
 
-			this.closeConnection();
-			return;
-		}
 	}
 
 	/**
 	 * Runs the actual task of shredding the data from the data file into the relational database
 	 * @param printQueries Controls whether or not the executed queries are printed to the console
 	 */
-	private void run (boolean printQueries) {
+	private void run () {
 
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
+			
+			//print statement for all instructions
+			for(ImportInstruction instruction : importInstructionManager.getAllInstructions()){
+				System.out.println(instruction.toString());
+			}
 
-			SAXImportHandler handler = new SAXImportHandler(importInstructionManager, connection, printQueries);
+			SAXImportHandler handler = new SAXImportHandler(importInstructionManager, connection, importerSettings);
 			saxParser.parse(XML_FILE, handler);
 
 			handler.processFinalEntries();
@@ -82,10 +81,13 @@ public class ImporterTask {
 	 */
 	private void initFromConfig(){
 		try {
-			Class.forName("org.postgresql.Driver");
 			importerSettings = new ImporterSettings(CONFIG_FILE);
 			importInstructionManager = new ImportInstructionManager(importerSettings.getImportInstructionMap());
-			connection = DriverManager.getConnection(importerSettings.getDatabaseHost(), importerSettings.getDataBaseUsername(), importerSettings.getDatabasePassword());
+
+			if(importerSettings.upload()){
+				Class.forName("org.postgresql.Driver");
+				connection = DriverManager.getConnection(importerSettings.getDatabaseHost(), importerSettings.getDataBaseUsername(), importerSettings.getDatabasePassword());
+			}
 		} catch (SQLException | ClassNotFoundException e){
 			e.printStackTrace();
 			this.closeConnection();
