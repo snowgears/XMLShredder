@@ -147,6 +147,10 @@ public class ImportEntry {
 		List<String> columnValues = new ArrayList<>();
 		columnNames.add(dbFieldKey);
 		columnValues.add(dbFieldValue);
+		
+		if(dbFieldValue.equals("SEASQ")){
+			String stop = "yes";
+		}
 
 		int i=0;
 		for(ImportEntry child : this.children){

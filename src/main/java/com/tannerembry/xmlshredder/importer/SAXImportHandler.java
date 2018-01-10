@@ -69,7 +69,7 @@ public class SAXImportHandler extends DefaultHandler {
 		else
 			fullPath += "."+qName;
 		
-//		if(fullPath.contains("Address")){
+//		if(fullPath.equals("OTA_HotelDescriptiveInfoRS.HotelDescriptiveContents.HotelDescriptiveContent.HotelInfo.Descriptions.Description.Text")){
 //			System.out.println(fullPath);
 //		}
 
@@ -88,7 +88,9 @@ public class SAXImportHandler extends DefaultHandler {
 			}
 
 			this.importInstruction = importInstruction;
+
 			handleValue(value);
+
 		}
 	}
 
@@ -115,8 +117,6 @@ public class SAXImportHandler extends DefaultHandler {
 		if (readValue) {
 			String value = new String(ch, start, length);
 			handleValue(value);
-
-			readValue = false;
 		}
 	}
 
@@ -159,6 +159,8 @@ public class SAXImportHandler extends DefaultHandler {
 				}
 			}
 		}
+
+		readValue = false;
 	}
 
 	/**

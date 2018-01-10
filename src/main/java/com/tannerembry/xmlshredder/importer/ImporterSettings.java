@@ -193,7 +193,12 @@ public class ImporterSettings {
 							Element childMapElement = (Element) childMapNode;
 
 							String xChildPath = childMapElement.getElementsByTagName("xpath").item(0).getTextContent();
-							String xChildAttribute = childMapElement.getElementsByTagName("xattribute").item(0).getTextContent();
+							String xChildAttribute = null;
+							try{
+								xChildAttribute = childMapElement.getElementsByTagName("xattribute").item(0).getTextContent();
+							} catch (NullPointerException e){ 
+								//xAttribute not required
+							}
 							String dbChildTable = childMapElement.getElementsByTagName("dbtable").item(0).getTextContent();
 							String dbChildField = childMapElement.getElementsByTagName("dbfield").item(0).getTextContent();
 

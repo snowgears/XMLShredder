@@ -16,7 +16,7 @@ import com.tannerembry.xmlshredder.importer.ImportInstruction;
 
 public class SpreadsheetExporter {
 
-	private HashMap<String, XSSFSheet> tabColumns = new HashMap<>();
+	private HashMap<String, SpreadsheetTab> tabs = new HashMap<>();
 	private XSSFWorkbook wb;
 	private String exportPath;
 
@@ -26,8 +26,8 @@ public class SpreadsheetExporter {
 		this.wb = new XSSFWorkbook();
 	}
 	
-	private XSSFSheet createSheet(List<String> columns){
-		String sheetName = "Sheet" + (tabColumns.size() + 1);
+	private SpreadsheetTab createTab(List<String> columns){
+		String sheetName = "Sheet" + (tabs.size() + 1);
 		XSSFSheet sheet = wb.createSheet(sheetName);
 
 		XSSFRow row = sheet.createRow(sheet.getLastRowNum());
@@ -48,7 +48,11 @@ public class SpreadsheetExporter {
 			cell.setCellValue("");
 		}
 		
-		return sheet;
+		//freeze the first two rows (the header)
+		sheet.createFreezePane(0, 2);
+		
+		SpreadsheetTab tab = new SpreadsheetTab(sheet, columns);
+		return tab;
 	}
 	
 	public void insertValues(ImportInstruction instruction, List<String> columns, List<String> values){
@@ -61,21 +65,36 @@ public class SpreadsheetExporter {
 		else
 			key = instruction.getParent().toString();
 		
-		if(tabColumns.containsKey(key)){
-			XSSFSheet sheet = tabColumns.get(key);
-			
+		if(values.contains("Issaquah")){
+			String stop = "yes";
+		}
+		
+		if(tabs.containsKey(key)){
+			SpreadsheetTab tab = tabs.get(key);
+			XSSFSheet sheet = tab.getSheet();
+
 			XSSFRow row = sheet.createRow(sheet.getLastRowNum()+1);
 
-			//iterating c number of columns
-			for (int c=0;c < values.size(); c++) {
-				XSSFCell cell = row.createCell(c);
+			for(int i = 0; i < tab.getColumnHeaders().size(); i++){
+				String headerColumn = tab.getColumnHeaders().get(i);
+				
+				int index = columns.indexOf(headerColumn);
+				if(index != -1){
+					
+					XSSFCell cell = row.createCell(i);
 
-				cell.setCellValue(values.get(c));
+					cell.setCellValue(values.get(index));
+				}
+				else{
+					XSSFCell cell = row.createCell(i);
+
+					cell.setCellValue("");
+				}
 			}
 		}
 		else{
 			//create a new tab and put in tabColumns map
-			tabColumns.put(key, createSheet(columns));
+			tabs.put(key, createTab(columns));
 			System.out.println(key);
 			System.out.println(columns);
 			//call insertValues with same arguments again
