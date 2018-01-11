@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+  <misc>
+    <upload>true</upload> <!-- Controls if shredded data should be uploaded to the specified database-->
+    <printqueries>false</printqueries> <!-- Controls if generated queries will be printed to the console-->
+  </misc>
+  <spreadsheet>
+    <create>true</create> <!-- Controls if shredded data should be exported in a spreadsheet-->
+    <file>/Users/tembry/Desktop/importer_files/output_values.xlsx</file> <!-- Output spreadsheet file location-->
+  </spreadsheet>
   <connection>
     <username>username</username>
     <password>password</password>
