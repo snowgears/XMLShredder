@@ -68,10 +68,6 @@ public class SAXImportHandler extends DefaultHandler {
 			fullPath = qName;
 		else
 			fullPath += "."+qName;
-		
-		if(fullPath.contains("HotelDescriptiveContents.HotelDescriptiveContent.ContactInfos.ContactInfo.Addresses.Address.AddressLine")){
-			int nothing = 0;
-		}
 
 		importInstruction = null;
 
@@ -82,12 +78,7 @@ public class SAXImportHandler extends DefaultHandler {
 			String value = null;
 			if(importInstruction.getXAttribute() != null && !importInstruction.getXAttribute().isEmpty()){
 				value = attributes.getValue(importInstruction.getXAttribute());
-				
-				//TODO delete this hardcoded nightmare after you complete exported file for Brett
-				if(importInstruction.getXAttribute().equals("SubRegion") && attributes.getValue("Region").equals("Global Division")){
-					continue;
-				}
-				
+
 				handleValue(value);
 			}
 			else{

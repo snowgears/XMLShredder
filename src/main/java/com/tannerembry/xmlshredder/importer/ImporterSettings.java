@@ -124,20 +124,7 @@ public class ImporterSettings {
 
 		// normalize text representation
 		document.getDocumentElement().normalize();
-		
-//		NodeList miscInfo = document.getElementsByTagName("misc");
-//		for (int d = 0; d < miscInfo.getLength(); d++) {
-//
-//			Node miscNode = miscInfo.item(d);
-//			if (miscNode.getNodeType() == Node.ELEMENT_NODE) {
-//
-//				Element miscElement = (Element) miscNode;
-//
-//				this.upload = Boolean.parseBoolean(miscElement.getElementsByTagName("upload").item(0).getTextContent());
-//				this.printQueries = Boolean.parseBoolean(miscElement.getElementsByTagName("printqueries").item(0).getTextContent());
-//			}
-//		}
-		
+
 		NodeList ssInfo = document.getElementsByTagName("spreadsheet");
 		for (int d = 0; d < ssInfo.getLength(); d++) {
 
