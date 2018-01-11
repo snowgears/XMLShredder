@@ -49,7 +49,7 @@ public class SAXImportHandler extends DefaultHandler {
 		this.importerSettings = importerSettings;
 
 		parentEntries = new HashMap<String, ImportEntry>();
-		
+
 		if(importerSettings.exportSpreadsheet())
 			exportSheet = new SpreadsheetExporter(importerSettings.getExportSpreadsheetPath());
 	}

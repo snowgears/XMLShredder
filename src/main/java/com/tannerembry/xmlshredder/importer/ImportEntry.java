@@ -68,7 +68,7 @@ public class ImportEntry {
 			children = new ArrayList<ImportEntry>();
 		}
 		//if(!hasChild(entry))
-			children.add(entry);
+		children.add(entry);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class ImportEntry {
 		}
 		return false;
 	}
-	
+
 	public void clearChildren(){
 		this.children.clear();
 	}
@@ -142,7 +142,7 @@ public class ImportEntry {
 		String insertColumnNames = "("+dbFieldKey+", ";
 		String insertColumnValues = "('"+dbFieldValue+"', ";
 		String updateColumns = "";
-		
+
 		List<String> columnNames = new ArrayList<>();
 		List<String> columnValues = new ArrayList<>();
 		columnNames.add(dbFieldKey);
@@ -152,7 +152,7 @@ public class ImportEntry {
 		for(ImportEntry child : this.children){
 			String value = child.getValue();
 			String key = child.getKey();
-			
+
 			columnNames.add(key);
 			columnValues.add(value);
 
@@ -199,11 +199,11 @@ public class ImportEntry {
 				if (psInsertLog != null)
 					psInsertLog.close();
 			}
-			
+
 			if(importerSettings.exportSpreadsheet() && exportSheet != null){
 				exportSheet.insertValues(instruction, columnNames, columnValues);
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;

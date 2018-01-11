@@ -92,8 +92,8 @@ public class ImportInstruction implements Comparable<ImportInstruction> {
 	 */
 	public void setParent(ImportInstruction e){
 		parent = e;
-//		if(e.getXAttribute() != null && !e.getXAttribute().isEmpty())
-//			parent+="+"+e.getXAttribute();
+		//		if(e.getXAttribute() != null && !e.getXAttribute().isEmpty())
+		//			parent+="+"+e.getXAttribute();
 
 		this.generateHashKey();
 	}

@@ -27,10 +27,10 @@ public class ImporterSettings {
 
 	private boolean printQueries;
 	private boolean upload;
-	
+
 	private boolean exportSpreadsheet;
 	private String exportSpreadsheetPath;
-	
+
 	private String dbUsername;
 	private String dbPassword;
 	private String dbHost;
@@ -72,7 +72,7 @@ public class ImporterSettings {
 	public String getDatabaseHost(){
 		return dbHost;
 	}
-	
+
 	/**
 	 * Returns whether or not to print queries to console
 	 * @return printQueries
@@ -80,7 +80,7 @@ public class ImporterSettings {
 	public boolean printQueries(){
 		return printQueries;
 	}
-	
+
 	/**
 	 * Returns the whether or not to actually try to upload to the database
 	 * @return upload
@@ -88,7 +88,7 @@ public class ImporterSettings {
 	public boolean upload(){
 		return upload;
 	}
-	
+
 	/**
 	 * Returns the whether or not to export shredded values into a spreadsheet
 	 * @return exportSpreadsheet
@@ -96,7 +96,7 @@ public class ImporterSettings {
 	public boolean exportSpreadsheet(){
 		return exportSpreadsheet;
 	}
-	
+
 	/**
 	 * Returns the file path to the exported spreadsheet (if applicable)
 	 * @return exportSpreadsheetPath

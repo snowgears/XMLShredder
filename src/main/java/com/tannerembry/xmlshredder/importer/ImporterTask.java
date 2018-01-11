@@ -54,7 +54,7 @@ public class ImporterTask {
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
-			
+
 			//print statement for all instructions
 			for(ImportInstruction instruction : importInstructionManager.getAllInstructions()){
 				System.out.println(instruction.toString());
