@@ -1,6 +1,6 @@
 # XML Shredder
 
-XML Shredder is a utility to parse through an xml file and import data from specified paths into a relational database. Because it is built on SAX, it is able to handle extremely large files and is very versatile. Developed by [Tanner Embry](http://tannerembry.com) while at the [Claresco Corporation](http://www.claresco.com).
+XML Shredder is a utility to parse through an xml file and import data from specified paths into a relational database or export the data into a spreadsheet. Because it is built on SAX, it is able to handle extremely large files and is very versatile. Developed by [Tanner Embry](http://tannerembry.com) while at the [Claresco Corporation](http://www.claresco.com).
 
 Open sourced by the will of [Claresco](http://www.claresco.com).
 
@@ -83,6 +83,14 @@ And the relational database we will be importing data into contains this table n
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+  <misc>
+    <upload>true</upload> <!-- Controls if shredded data should be uploaded to the specified database-->
+    <printqueries>false</printqueries> <!-- Controls if generated queries will be printed to the console-->
+  </misc>
+  <spreadsheet>
+    <create>true</create> <!-- Controls if shredded data should be exported in a spreadsheet-->
+    <file>/Users/tembry/Desktop/importer_files/output_values.xlsx</file> <!-- Output spreadsheet file location-->
+  </spreadsheet>
   <connection>
     <username>username</username>
     <password>password</password>
