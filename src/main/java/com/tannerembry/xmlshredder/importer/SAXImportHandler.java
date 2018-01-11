@@ -69,28 +69,31 @@ public class SAXImportHandler extends DefaultHandler {
 		else
 			fullPath += "."+qName;
 		
-//		if(fullPath.equals("OTA_HotelDescriptiveInfoRS.HotelDescriptiveContents.HotelDescriptiveContent.HotelInfo.Descriptions.Description.Text")){
-//			System.out.println(fullPath);
-//		}
+		if(fullPath.contains("HotelDescriptiveContents.HotelDescriptiveContent.ContactInfos.ContactInfo.Addresses.Address.AddressLine")){
+			int nothing = 0;
+		}
 
 		importInstruction = null;
 
 		importInstructions = importInstructionManager.getInstructions(qName, fullPath);
 
 		for(ImportInstruction importInstruction : importInstructions){
+			this.importInstruction = importInstruction;
 			String value = null;
 			if(importInstruction.getXAttribute() != null && !importInstruction.getXAttribute().isEmpty()){
 				value = attributes.getValue(importInstruction.getXAttribute());
+				
+				//TODO delete this hardcoded nightmare after you complete exported file for Brett
+				if(importInstruction.getXAttribute().equals("SubRegion") && attributes.getValue("Region").equals("Global Division")){
+					continue;
+				}
+				
+				handleValue(value);
 			}
 			else{
 				//read value using the SAX characters() method which will be called below when this value is set
 				readValue = true;
 			}
-
-			this.importInstruction = importInstruction;
-
-			handleValue(value);
-
 		}
 	}
 
